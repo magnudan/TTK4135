@@ -7,7 +7,7 @@ init; % Change this to the init file corresponding to your helicopter
 
 % Continous time system model. x = [lambda r p p_dot]'
 A_c = [0 1 0 0; 0 0 -K_2 0; 0 0 0 1; 0 0 -K_1*K_pp -K_1*K_pd];
-B_c = [0; 0; 0; -K_1*K_pp];
+B_c = [0; 0; 0; K_1*K_pp];
 
 
 
