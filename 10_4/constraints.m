@@ -1,0 +1,9 @@
+function [c,ceq] = constraints(z)
+    N = 40;
+    M = N;
+    mx = 6;
+    alpha = 0.2;
+    beta = 20;
+    l_t = 2*pi/3;
+    c = alpha*exp(-beta*(z(1:mx:N*mx) - l_t).^2) - z(5:mx:N*mx);    % Compute nonlinear inequalities at x.
+    ceq = [];   % Compute nonlinear equalities at x.
