@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.191
+ * Model version              : 1.194
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 08 15:23:43 2018
+ * C source code generated on : Thu Feb 22 17:02:39 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -67,13 +67,13 @@ static DataTypeTransition rtBTransitions[] = {
 
   { (char_T *)(&helikopter_DW.HILReadEncoderTimebase_Task), 15, 0, 1 },
 
-  { (char_T *)(&helikopter_DW.Elevation_PWORK.LoggedData), 11, 0, 17 },
+  { (char_T *)(&helikopter_DW.Elevation_PWORK.LoggedData), 11, 0, 18 },
 
   { (char_T *)(&helikopter_DW.HILInitialize_ClockModes[0]), 6, 0, 46 },
 
   { (char_T *)(&helikopter_DW.HILInitialize_POSortedChans[0]), 7, 0, 8 },
 
-  { (char_T *)(&helikopter_DW.FromWorkspace1_IWORK.PrevIndex), 10, 0, 2 }
+  { (char_T *)(&helikopter_DW.x_optimal_IWORK.PrevIndex), 10, 0, 2 }
 };
 
 /* data type transition table for block I/O structure */
@@ -84,7 +84,7 @@ static DataTypeTransitionTable rtBTransTable = {
 
 /* data type transitions for Parameters structure */
 static DataTypeTransition rtPTransitions[] = {
-  { (char_T *)(&helikopter_P.K_LQR_T[0]), 0, 0, 28 },
+  { (char_T *)(&helikopter_P.K_LQR[0]), 0, 0, 36 },
 
   { (char_T *)(&helikopter_P.HILReadEncoderTimebase_clock), 6, 0, 10 },
 
@@ -92,7 +92,7 @@ static DataTypeTransition rtPTransitions[] = {
 
   { (char_T *)(&helikopter_P.HILInitialize_active), 8, 0, 35 },
 
-  { (char_T *)(&helikopter_P.ElevationCounttorad_Gain), 0, 0, 32 },
+  { (char_T *)(&helikopter_P.ElevationCounttorad_Gain), 0, 0, 31 },
 
   { (char_T *)(&helikopter_P.HILReadEncoderTimebase_Active), 8, 0, 2 }
 };

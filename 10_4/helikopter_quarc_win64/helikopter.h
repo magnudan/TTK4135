@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.191
+ * Model version              : 1.194
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 08 15:23:43 2018
+ * C source code generated on : Thu Feb 22 17:02:39 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -833,16 +833,20 @@ typedef struct {
   } Travel_PWORK;                      /* '<Root>/Travel' */
 
   struct {
-    void *TimePtr;
-    void *DataPtr;
-    void *RSimInfoPtr;
-  } FromWorkspace1_PWORK;              /* '<Root>/From Workspace1' */
+    void *LoggedData;
+  } Travel1_PWORK;                     /* '<Root>/Travel1' */
 
   struct {
     void *TimePtr;
     void *DataPtr;
     void *RSimInfoPtr;
-  } FromWorkspace_PWORK;               /* '<Root>/From Workspace' */
+  } x_optimal_PWORK;                   /* '<Root>/x_optimal' */
+
+  struct {
+    void *TimePtr;
+    void *DataPtr;
+    void *RSimInfoPtr;
+  } optimalinput_PWORK;                /* '<Root>/optimal input' */
 
   struct {
     void *LoggedData;
@@ -899,11 +903,11 @@ typedef struct {
   uint32_T HILInitialize_POSortedChans[8];/* '<Root>/HIL Initialize' */
   struct {
     int_T PrevIndex;
-  } FromWorkspace1_IWORK;              /* '<Root>/From Workspace1' */
+  } x_optimal_IWORK;                   /* '<Root>/x_optimal' */
 
   struct {
     int_T PrevIndex;
-  } FromWorkspace_IWORK;               /* '<Root>/From Workspace' */
+  } optimalinput_IWORK;                /* '<Root>/optimal input' */
 } DW_helikopter_T;
 
 /* Continuous states (auto storage) */
@@ -956,8 +960,8 @@ typedef struct {
 
 /* Parameters (auto storage) */
 struct P_helikopter_T_ {
-  real_T K_LQR_T[4];                   /* Variable: K_LQR_T
-                                        * Referenced by: '<Root>/Constant'
+  real_T K_LQR[12];                    /* Variable: K_LQR
+                                        * Referenced by: '<Root>/Gain'
                                         */
   real_T K_ed;                         /* Variable: K_ed
                                         * Referenced by: '<S3>/K_ed'
@@ -1199,14 +1203,11 @@ struct P_helikopter_T_ {
   real_T Gain_Gain_a;                  /* Expression: 180/pi
                                         * Referenced by: '<S8>/Gain'
                                         */
-  real_T TravelCounttorad_Gain;        /* Expression: 2*pi/4096
+  real_T TravelCounttorad_Gain;        /* Expression: pi/4096
                                         * Referenced by: '<S4>/Travel: Count to rad'
                                         */
   real_T Gain_Gain_ar;                 /* Expression: 180/pi
                                         * Referenced by: '<S11>/Gain'
-                                        */
-  real_T Constant1_Value;              /* Expression: pi
-                                        * Referenced by: '<Root>/Constant1'
                                         */
   real_T TravelTransferFcn_A;          /* Computed Parameter: TravelTransferFcn_A
                                         * Referenced by: '<S4>/Travel: Transfer Fcn'
@@ -1244,6 +1245,9 @@ struct P_helikopter_T_ {
   real_T Gain_Gain_n;                  /* Expression: 180/pi
                                         * Referenced by: '<S7>/Gain'
                                         */
+  real_T Constant1_Value;              /* Expression: pi
+                                        * Referenced by: '<Root>/Constant1'
+                                        */
   real_T Gain1_Gain;                   /* Expression: pi/180
                                         * Referenced by: '<S2>/Gain1'
                                         */
@@ -1255,9 +1259,6 @@ struct P_helikopter_T_ {
                                         */
   real_T Integrator_LowerSat;          /* Expression: -inf
                                         * Referenced by: '<S3>/Integrator'
-                                        */
-  real_T e_ref_Value;                  /* Expression: 0
-                                        * Referenced by: '<Root>/e_ref'
                                         */
   real_T Backgain_Gain;                /* Expression: 0.5
                                         * Referenced by: '<S1>/Back gain'

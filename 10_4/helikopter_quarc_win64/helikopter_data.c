@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.191
+ * Model version              : 1.194
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 08 15:23:43 2018
+ * C source code generated on : Thu Feb 22 17:02:39 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -18,11 +18,13 @@
 
 /* Block parameters (auto storage) */
 P_helikopter_T helikopter_P = {
-  /*  Variable: K_LQR_T
-   * Referenced by: '<Root>/Constant'
+  /*  Variable: K_LQR
+   * Referenced by: '<Root>/Gain'
    */
-  { 0.095414606738552413, 0.7041580454611126, -0.39374235341207225,
-    -0.1078351567987389 },
+  { -0.662480224594051, 2.57212679500879E-16, -2.4397027567599339,
+    7.3394853899487543E-16, 1.1824153080356954, -3.1730324224292878E-16,
+    0.42471767417603917, -5.356898011122853E-17, -1.94389195132647E-15,
+    5.5966077546303588, -4.6869442224775208E-16, 3.3716641879737708 },
   11.219843696907915,                  /* Variable: K_ed
                                         * Referenced by: '<S3>/K_ed'
                                         */
@@ -277,14 +279,11 @@ P_helikopter_T helikopter_P = {
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<S8>/Gain'
                                         */
-  0.0015339807878856412,               /* Expression: 2*pi/4096
+  0.00076699039394282058,              /* Expression: pi/4096
                                         * Referenced by: '<S4>/Travel: Count to rad'
                                         */
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<S11>/Gain'
-                                        */
-  3.1415926535897931,                  /* Expression: pi
-                                        * Referenced by: '<Root>/Constant1'
                                         */
   -10.0,                               /* Computed Parameter: TravelTransferFcn_A
                                         * Referenced by: '<S4>/Travel: Transfer Fcn'
@@ -322,6 +321,9 @@ P_helikopter_T helikopter_P = {
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<S7>/Gain'
                                         */
+  3.1415926535897931,                  /* Expression: pi
+                                        * Referenced by: '<Root>/Constant1'
+                                        */
   0.017453292519943295,                /* Expression: pi/180
                                         * Referenced by: '<S2>/Gain1'
                                         */
@@ -333,9 +335,6 @@ P_helikopter_T helikopter_P = {
                                         */
   0.0,                                 /* Expression: -inf
                                         * Referenced by: '<S3>/Integrator'
-                                        */
-  0.0,                                 /* Expression: 0
-                                        * Referenced by: '<Root>/e_ref'
                                         */
   0.5,                                 /* Expression: 0.5
                                         * Referenced by: '<S1>/Back gain'
