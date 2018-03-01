@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.194
+ * Model version              : 1.196
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 22 17:02:39 2018
+ * C source code generated on : Thu Mar 01 16:32:35 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -18,7 +18,7 @@
 #include "rtwtypes.h"
 #include "multiword_types.h"
 
-/* Used by FromWorkspace Block: '<Root>/x_optimal' */
+/* Used by FromWorkspace Block: '<Root>/optimal input' */
 #ifndef rtInterpolate
 # define rtInterpolate(v1,v2,f1,f2)    (((v1)==(v2))?((double)(v1)): (((f1)*((double)(v1)))+((f2)*((double)(v2)))))
 #endif
@@ -33,6 +33,10 @@
 
 /* A global buffer for storing error messages (defined in quanser_common library) */
 EXTERN char _rt_error_message[512];
+int_T rt_WriteMat4FileHeader(FILE *fp,
+  int32_T m,
+  int32_T n,
+  const char_T *name);
 
 /* private model entry point functions */
 extern void helikopter_derivatives(void);

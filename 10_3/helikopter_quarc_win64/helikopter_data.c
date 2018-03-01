@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.193
+ * Model version              : 1.194
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 08 16:21:54 2018
+ * C source code generated on : Thu Mar 01 15:43:01 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -277,14 +277,14 @@ P_helikopter_T helikopter_P = {
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<S8>/Gain'
                                         */
+  3.1415926535897931,                  /* Expression: pi
+                                        * Referenced by: '<Root>/Constant1'
+                                        */
   0.00076699039394282058,              /* Expression: pi/4096
                                         * Referenced by: '<S4>/Travel: Count to rad'
                                         */
   57.295779513082323,                  /* Expression: 180/pi
                                         * Referenced by: '<S11>/Gain'
-                                        */
-  3.1415926535897931,                  /* Expression: pi
-                                        * Referenced by: '<Root>/Constant1'
                                         */
   -10.0,                               /* Computed Parameter: TravelTransferFcn_A
                                         * Referenced by: '<S4>/Travel: Transfer Fcn'

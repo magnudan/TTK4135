@@ -50,8 +50,8 @@ z  = zeros(N*mx+M*mu,1);                % Initialize z for the whole horizon
 z0 = z;                                 % Initial value for optimization
 
 % Bounds
-ul 	    = [-pi/4 ; -Inf];               % Lower bound on control
-uu 	    = [pi/4 ; Inf];                 % Upper bound on control
+ul 	    = [-pi/6 ; -Inf];               % Lower bound on control
+uu 	    = [pi/6 ; Inf];                 % Upper bound on control
 
 xl      = -Inf*ones(mx,1);              % Lower bound on states (no bound)
 xu      = Inf*ones(mx,1);               % Upper bound on states (no bound)
@@ -72,8 +72,8 @@ Q1(1,1) = 1;                            % Weight on state x1
 Q1(2,2) = 1;                            % Weight on state x2
 Q1(3,3) = 0;                            % Weight on state x3
 Q1(4,4) = 0;                            % Weight on state x4
-Q1(5,5) = 0;
-Q1(6,6) = 0;
+Q1(5,5) = 0;                            % Weight on state x5
+Q1(6,6) = 0;                            % Weight on state x6
 P1 = zeros(mu,mu);                      % Weight on input
 P1(1,1) = 1;
 P1(2,2) = 1;

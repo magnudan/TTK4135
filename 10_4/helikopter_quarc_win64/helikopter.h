@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.194
+ * Model version              : 1.196
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 22 17:02:39 2018
+ * C source code generated on : Thu Mar 01 16:32:35 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -16,9 +16,12 @@
 #ifndef RTW_HEADER_helikopter_h_
 #define RTW_HEADER_helikopter_h_
 #include <math.h>
+#include <stddef.h>
 #include <string.h>
 #ifndef helikopter_COMMON_INCLUDES_
 # define helikopter_COMMON_INCLUDES_
+#include <stdio.h>
+#include <string.h>
 #include "rtwtypes.h"
 #include "simstruc.h"
 #include "fixedpoint.h"
@@ -795,6 +798,8 @@ typedef struct {
   real_T Gain_d;                       /* '<S12>/Gain' */
   real_T Gain_b;                       /* '<S9>/Gain' */
   real_T Gain_dg;                      /* '<S7>/Gain' */
+  real_T Gain1[6];                     /* '<S2>/Gain1' */
+  real_T Sum5;                         /* '<Root>/Sum5' */
   real_T Sum1;                         /* '<Root>/Sum1' */
   real_T Sum2;                         /* '<Root>/Sum2' */
   real_T K_ei;                         /* '<S3>/K_ei' */
@@ -829,18 +834,12 @@ typedef struct {
   } Pitch_PWORK;                       /* '<Root>/Pitch' */
 
   struct {
+    void *FilePtr;
+  } ToFile_PWORK;                      /* '<Root>/To File' */
+
+  struct {
     void *LoggedData;
   } Travel_PWORK;                      /* '<Root>/Travel' */
-
-  struct {
-    void *LoggedData;
-  } Travel1_PWORK;                     /* '<Root>/Travel1' */
-
-  struct {
-    void *TimePtr;
-    void *DataPtr;
-    void *RSimInfoPtr;
-  } x_optimal_PWORK;                   /* '<Root>/x_optimal' */
 
   struct {
     void *TimePtr;
@@ -902,8 +901,9 @@ typedef struct {
   int32_T HILReadEncoderTimebase_Buffer[3];/* '<S4>/HIL Read Encoder Timebase' */
   uint32_T HILInitialize_POSortedChans[8];/* '<Root>/HIL Initialize' */
   struct {
-    int_T PrevIndex;
-  } x_optimal_IWORK;                   /* '<Root>/x_optimal' */
+    int_T Count;
+    int_T Decimation;
+  } ToFile_IWORK;                      /* '<Root>/To File' */
 
   struct {
     int_T PrevIndex;
@@ -960,9 +960,6 @@ typedef struct {
 
 /* Parameters (auto storage) */
 struct P_helikopter_T_ {
-  real_T K_LQR[12];                    /* Variable: K_LQR
-                                        * Referenced by: '<Root>/Gain'
-                                        */
   real_T K_ed;                         /* Variable: K_ed
                                         * Referenced by: '<S3>/K_ed'
                                         */
@@ -1203,6 +1200,9 @@ struct P_helikopter_T_ {
   real_T Gain_Gain_a;                  /* Expression: 180/pi
                                         * Referenced by: '<S8>/Gain'
                                         */
+  real_T Constant1_Value;              /* Expression: pi
+                                        * Referenced by: '<Root>/Constant1'
+                                        */
   real_T TravelCounttorad_Gain;        /* Expression: pi/4096
                                         * Referenced by: '<S4>/Travel: Count to rad'
                                         */
@@ -1244,9 +1244,6 @@ struct P_helikopter_T_ {
                                         */
   real_T Gain_Gain_n;                  /* Expression: 180/pi
                                         * Referenced by: '<S7>/Gain'
-                                        */
-  real_T Constant1_Value;              /* Expression: pi
-                                        * Referenced by: '<Root>/Constant1'
                                         */
   real_T Gain1_Gain;                   /* Expression: pi/180
                                         * Referenced by: '<S2>/Gain1'

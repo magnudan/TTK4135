@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.193
+ * Model version              : 1.194
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 08 16:21:54 2018
+ * C source code generated on : Thu Mar 01 15:43:01 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -58,7 +58,7 @@ static const char_T * rtDataTypeNames[] = {
 
 /* data type transitions for block I/O structure */
 static DataTypeTransition rtBTransitions[] = {
-  { (char_T *)(&helikopter_B.ElevationCounttorad), 0, 0, 16 }
+  { (char_T *)(&helikopter_B.ElevationCounttorad), 0, 0, 23 }
   ,
 
   { (char_T *)(&helikopter_DW.HILInitialize_AIMinimums[0]), 0, 0, 70 },
@@ -67,13 +67,13 @@ static DataTypeTransition rtBTransitions[] = {
 
   { (char_T *)(&helikopter_DW.HILReadEncoderTimebase_Task), 15, 0, 1 },
 
-  { (char_T *)(&helikopter_DW.Elevation_PWORK.LoggedData), 11, 0, 17 },
+  { (char_T *)(&helikopter_DW.Elevation_PWORK.LoggedData), 11, 0, 18 },
 
   { (char_T *)(&helikopter_DW.HILInitialize_ClockModes[0]), 6, 0, 46 },
 
   { (char_T *)(&helikopter_DW.HILInitialize_POSortedChans[0]), 7, 0, 8 },
 
-  { (char_T *)(&helikopter_DW.FromWorkspace1_IWORK.PrevIndex), 10, 0, 2 }
+  { (char_T *)(&helikopter_DW.ToFile_IWORK.Count), 10, 0, 3 }
 };
 
 /* data type transition table for block I/O structure */

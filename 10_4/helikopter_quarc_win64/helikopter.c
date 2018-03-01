@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.194
+ * Model version              : 1.196
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Feb 22 17:02:39 2018
+ * C source code generated on : Thu Mar 01 16:32:35 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -29,6 +29,33 @@ DW_helikopter_T helikopter_DW;
 /* Real-time model */
 RT_MODEL_helikopter_T helikopter_M_;
 RT_MODEL_helikopter_T *const helikopter_M = &helikopter_M_;
+
+/*
+ * Writes out MAT-file header.  Returns success or failure.
+ * Returns:
+ *      0 - success
+ *      1 - failure
+ */
+int_T rt_WriteMat4FileHeader(FILE *fp, int32_T m, int32_T n, const char *name)
+{
+  typedef enum { ELITTLE_ENDIAN, EBIG_ENDIAN } ByteOrder;
+
+  int16_T one = 1;
+  ByteOrder byteOrder = (*((int8_T *)&one)==1) ? ELITTLE_ENDIAN : EBIG_ENDIAN;
+  int32_T type = (byteOrder == ELITTLE_ENDIAN) ? 0: 1000;
+  int32_T imagf = 0;
+  int32_T name_len = (int32_T)strlen(name) + 1;
+  if ((fwrite(&type, sizeof(int32_T), 1, fp) == 0) ||
+      (fwrite(&m, sizeof(int32_T), 1, fp) == 0) ||
+      (fwrite(&n, sizeof(int32_T), 1, fp) == 0) ||
+      (fwrite(&imagf, sizeof(int32_T), 1, fp) == 0) ||
+      (fwrite(&name_len, sizeof(int32_T), 1, fp) == 0) ||
+      (fwrite(name, sizeof(char), name_len, fp) == 0)) {
+    return(1);
+  } else {
+    return(0);
+  }
+}                                      /* end rt_WriteMat4FileHeader */
 
 /*
  * This function updates continuous states using the ODE1 fixed-step
@@ -59,19 +86,15 @@ static void rt_ertODEUpdateContinuousStates(RTWSolverInfo *si )
 void helikopter_output(void)
 {
   /* local block i/o variables */
-  real_T rtb_optimalinput[2];
-  real_T rtb_Sum3_o[6];
+  real_T rtb_Sum4[2];
   real_T rtb_Backgain;
   real_T rtb_HILReadEncoderTimebase_o1;
   real_T rtb_HILReadEncoderTimebase_o2;
   real_T rtb_HILReadEncoderTimebase_o3;
+  real_T rtb_TmpSignalConversionAtToFile[6];
   real_T *lastU;
-  real_T rtb_Gain1[6];
-  real_T rtb_Sum4[2];
   real_T rtb_Derivative;
-  real_T tmp[6];
   int32_T i;
-  int32_T i_0;
   if (rtmIsMajorTimeStep(helikopter_M)) {
     /* set solver stop time */
     if (!(helikopter_M->Timing.clockTick0+1)) {
@@ -172,101 +195,59 @@ void helikopter_output(void)
 
   /* Gain: '<S7>/Gain' */
   helikopter_B.Gain_dg = helikopter_P.Gain_Gain_n * rtb_Backgain;
-  if (rtmIsMajorTimeStep(helikopter_M)) {
-  }
-
-  /* FromWorkspace: '<Root>/x_optimal' */
-  {
-    real_T *pDataValues = (real_T *) helikopter_DW.x_optimal_PWORK.DataPtr;
-    real_T *pTimeValues = (real_T *) helikopter_DW.x_optimal_PWORK.TimePtr;
-    int_T currTimeIndex = helikopter_DW.x_optimal_IWORK.PrevIndex;
-    real_T t = helikopter_M->Timing.t[0];
-
-    /* Get index */
-    if (t <= pTimeValues[0]) {
-      currTimeIndex = 0;
-    } else if (t >= pTimeValues[80]) {
-      currTimeIndex = 79;
-    } else {
-      if (t < pTimeValues[currTimeIndex]) {
-        while (t < pTimeValues[currTimeIndex]) {
-          currTimeIndex--;
-        }
-      } else {
-        while (t >= pTimeValues[currTimeIndex + 1]) {
-          currTimeIndex++;
-        }
-      }
-    }
-
-    helikopter_DW.x_optimal_IWORK.PrevIndex = currTimeIndex;
-
-    /* Post output */
-    {
-      real_T t1 = pTimeValues[currTimeIndex];
-      real_T t2 = pTimeValues[currTimeIndex + 1];
-      if (t1 == t2) {
-        if (t < t1) {
-          {
-            int_T elIdx;
-            for (elIdx = 0; elIdx < 6; ++elIdx) {
-              (&rtb_Sum3_o[0])[elIdx] = pDataValues[currTimeIndex];
-              pDataValues += 81;
-            }
-          }
-        } else {
-          {
-            int_T elIdx;
-            for (elIdx = 0; elIdx < 6; ++elIdx) {
-              (&rtb_Sum3_o[0])[elIdx] = pDataValues[currTimeIndex + 1];
-              pDataValues += 81;
-            }
-          }
-        }
-      } else {
-        real_T f1 = (t2 - t) / (t2 - t1);
-        real_T f2 = 1.0 - f1;
-        real_T d1;
-        real_T d2;
-        int_T TimeIndex= currTimeIndex;
-
-        {
-          int_T elIdx;
-          for (elIdx = 0; elIdx < 6; ++elIdx) {
-            d1 = pDataValues[TimeIndex];
-            d2 = pDataValues[TimeIndex + 1];
-            (&rtb_Sum3_o[0])[elIdx] = (real_T) rtInterpolate(d1, d2, f1, f2);
-            pDataValues += 81;
-          }
-        }
-      }
-    }
-  }
 
   /* Gain: '<S2>/Gain1' */
-  rtb_Gain1[0] = helikopter_P.Gain1_Gain * helikopter_B.Gain_p;
-  rtb_Gain1[1] = helikopter_P.Gain1_Gain * helikopter_B.Gain_d;
-  rtb_Gain1[2] = helikopter_P.Gain1_Gain * helikopter_B.Gain_i;
-  rtb_Gain1[3] = helikopter_P.Gain1_Gain * helikopter_B.Gain_b;
-  rtb_Gain1[4] = helikopter_P.Gain1_Gain * helikopter_B.Sum;
-  rtb_Gain1[5] = helikopter_P.Gain1_Gain * helikopter_B.Gain_dg;
+  helikopter_B.Gain1[0] = helikopter_P.Gain1_Gain * helikopter_B.Gain_p;
+  helikopter_B.Gain1[1] = helikopter_P.Gain1_Gain * helikopter_B.Gain_d;
+  helikopter_B.Gain1[2] = helikopter_P.Gain1_Gain * helikopter_B.Gain_i;
+  helikopter_B.Gain1[3] = helikopter_P.Gain1_Gain * helikopter_B.Gain_b;
+  helikopter_B.Gain1[4] = helikopter_P.Gain1_Gain * helikopter_B.Sum;
+  helikopter_B.Gain1[5] = helikopter_P.Gain1_Gain * helikopter_B.Gain_dg;
 
   /* Sum: '<Root>/Sum5' incorporates:
    *  Constant: '<Root>/Constant1'
    */
-  rtb_Backgain = helikopter_P.Constant1_Value + rtb_Gain1[0];
+  helikopter_B.Sum5 = helikopter_P.Constant1_Value + helikopter_B.Gain1[0];
+  if (rtmIsMajorTimeStep(helikopter_M)) {
+    /* SignalConversion: '<Root>/TmpSignal ConversionAtTo FileInport1' */
+    rtb_TmpSignalConversionAtToFile[0] = helikopter_B.Sum5;
+    for (i = 0; i < 5; i++) {
+      rtb_TmpSignalConversionAtToFile[i + 1] = helikopter_B.Gain1[i + 1];
+    }
 
-  /* Sum: '<Root>/Sum3' */
-  tmp[0] = rtb_Backgain;
-  for (i = 0; i < 5; i++) {
-    tmp[i + 1] = rtb_Gain1[1 + i];
+    /* End of SignalConversion: '<Root>/TmpSignal ConversionAtTo FileInport1' */
+
+    /* ToFile: '<Root>/To File' */
+    {
+      if (!(++helikopter_DW.ToFile_IWORK.Decimation % 1) &&
+          (helikopter_DW.ToFile_IWORK.Count*7)+1 < 100000000 ) {
+        FILE *fp = (FILE *) helikopter_DW.ToFile_PWORK.FilePtr;
+        if (fp != (NULL)) {
+          real_T u[7];
+          helikopter_DW.ToFile_IWORK.Decimation = 0;
+          u[0] = helikopter_M->Timing.t[1];
+          u[1] = rtb_TmpSignalConversionAtToFile[0];
+          u[2] = rtb_TmpSignalConversionAtToFile[1];
+          u[3] = rtb_TmpSignalConversionAtToFile[2];
+          u[4] = rtb_TmpSignalConversionAtToFile[3];
+          u[5] = rtb_TmpSignalConversionAtToFile[4];
+          u[6] = rtb_TmpSignalConversionAtToFile[5];
+          if (fwrite(u, sizeof(real_T), 7, fp) != 7) {
+            rtmSetErrorStatus(helikopter_M, "Error writing to MAT-file Data.mat");
+            return;
+          }
+
+          if (((++helikopter_DW.ToFile_IWORK.Count)*7)+1 >= 100000000) {
+            (void)fprintf(stdout,
+                          "*** The ToFile block will stop logging data before\n"
+                          "    the simulation has ended, because it has reached\n"
+                          "    the maximum number of elements (100000000)\n"
+                          "    allowed in MAT-file Data.mat.\n");
+          }
+        }
+      }
+    }
   }
-
-  for (i = 0; i < 6; i++) {
-    rtb_Sum3_o[i] = tmp[i] - rtb_Sum3_o[i];
-  }
-
-  /* End of Sum: '<Root>/Sum3' */
 
   /* FromWorkspace: '<Root>/optimal input' */
   {
@@ -303,7 +284,7 @@ void helikopter_output(void)
           {
             int_T elIdx;
             for (elIdx = 0; elIdx < 2; ++elIdx) {
-              (&rtb_optimalinput[0])[elIdx] = pDataValues[currTimeIndex];
+              (&rtb_Sum4[0])[elIdx] = pDataValues[currTimeIndex];
               pDataValues += 81;
             }
           }
@@ -311,7 +292,7 @@ void helikopter_output(void)
           {
             int_T elIdx;
             for (elIdx = 0; elIdx < 2; ++elIdx) {
-              (&rtb_optimalinput[0])[elIdx] = pDataValues[currTimeIndex + 1];
+              (&rtb_Sum4[0])[elIdx] = pDataValues[currTimeIndex + 1];
               pDataValues += 81;
             }
           }
@@ -328,8 +309,7 @@ void helikopter_output(void)
           for (elIdx = 0; elIdx < 2; ++elIdx) {
             d1 = pDataValues[TimeIndex];
             d2 = pDataValues[TimeIndex + 1];
-            (&rtb_optimalinput[0])[elIdx] = (real_T) rtInterpolate(d1, d2, f1,
-              f2);
+            (&rtb_Sum4[0])[elIdx] = (real_T) rtInterpolate(d1, d2, f1, f2);
             pDataValues += 81;
           }
         }
@@ -337,19 +317,9 @@ void helikopter_output(void)
     }
   }
 
-  /* Sum: '<Root>/Sum4' incorporates:
-   *  Gain: '<Root>/Gain'
-   */
-  for (i = 0; i < 2; i++) {
-    rtb_Derivative = 0.0;
-    for (i_0 = 0; i_0 < 6; i_0++) {
-      rtb_Derivative += helikopter_P.K_LQR[(i_0 << 1) + i] * rtb_Sum3_o[i_0];
-    }
-
-    rtb_Sum4[i] = rtb_optimalinput[i] - rtb_Derivative;
-  }
-
-  /* End of Sum: '<Root>/Sum4' */
+  /* Sum: '<Root>/Sum4' */
+  rtb_Sum4[0] -= 0.0;
+  rtb_Sum4[1] -= 0.0;
 
   /* Sum: '<Root>/Sum1' incorporates:
    *  Constant: '<Root>/Vd_bias'
@@ -358,8 +328,9 @@ void helikopter_output(void)
    *  Sum: '<S5>/Sum2'
    *  Sum: '<S5>/Sum3'
    */
-  helikopter_B.Sum1 = ((rtb_Sum4[0] - rtb_Gain1[2]) * helikopter_P.K_pp -
-                       helikopter_P.K_pd * rtb_Gain1[3]) + helikopter_P.Vd_ff;
+  helikopter_B.Sum1 = ((rtb_Sum4[0] - helikopter_B.Gain1[2]) * helikopter_P.K_pp
+                       - helikopter_P.K_pd * helikopter_B.Gain1[3]) +
+    helikopter_P.Vd_ff;
   if (rtmIsMajorTimeStep(helikopter_M)) {
   }
 
@@ -378,7 +349,7 @@ void helikopter_output(void)
   rtb_Backgain = helikopter_X.Integrator_CSTATE;
 
   /* Sum: '<S3>/Sum' */
-  rtb_Derivative = rtb_Sum4[1] - rtb_Gain1[4];
+  rtb_Derivative = rtb_Sum4[1] - helikopter_B.Gain1[4];
 
   /* Sum: '<Root>/Sum2' incorporates:
    *  Constant: '<Root>/Vs_bias'
@@ -387,7 +358,8 @@ void helikopter_output(void)
    *  Sum: '<S3>/Sum1'
    */
   helikopter_B.Sum2 = ((helikopter_P.K_ep * rtb_Derivative + rtb_Backgain) -
-                       helikopter_P.K_ed * rtb_Gain1[5]) + helikopter_P.Vs_ff;
+                       helikopter_P.K_ed * helikopter_B.Gain1[5]) +
+    helikopter_P.Vs_ff;
   if (rtmIsMajorTimeStep(helikopter_M)) {
   }
 
@@ -966,122 +938,24 @@ void helikopter_initialize(void)
     }
   }
 
-  /* Start for FromWorkspace: '<Root>/x_optimal' */
+  /* Start for ToFile: '<Root>/To File' */
   {
-    static real_T pTimeValues0[] = { 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75,
-      2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5, 4.75, 5.0,
-      5.25, 5.5, 5.75, 6.0, 6.25, 6.5, 6.75, 7.0, 7.25, 7.5, 7.75, 8.0, 8.25,
-      8.5, 8.75, 9.0, 9.25, 9.5, 9.75, 10.0, 10.25, 10.5, 10.75, 11.0, 11.25,
-      11.5, 11.75, 12.0, 12.25, 12.5, 12.75, 13.0, 13.25, 13.5, 13.75, 14.0,
-      14.25, 14.5, 14.75, 15.0, 15.25, 15.5, 15.75, 16.0, 16.25, 16.5, 16.75,
-      17.0, 17.25, 17.5, 17.75, 18.0, 18.25, 18.5, 18.75, 19.0, 19.25, 19.5,
-      19.75, 20.0 } ;
+    char fileName[509] = "Data.mat";
+    FILE *fp = (NULL);
+    if ((fp = fopen(fileName, "wb")) == (NULL)) {
+      rtmSetErrorStatus(helikopter_M, "Error creating .mat file Data.mat");
+      return;
+    }
 
-    static real_T pDataValues0[] = { 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1415926535897931, 3.1415926535897931,
-      3.1415926535897931, 3.1359668852488927, 3.1185270033921006,
-      3.0841676232500497, 3.0291447959918707, 2.9508845567963409,
-      2.8476880888814535, 2.7184653181454204, 2.5637062919636997,
-      2.3865389196317728, 2.1920620958239785, 1.9863872738418695,
-      1.7758441336841844, 1.5663377305250408, 1.3629453533582432,
-      1.1697253046579592, 0.98967964480303061, 0.82481543997911821,
-      0.67626116779832857, 0.54440778096292508, 0.42905454365168688,
-      0.32954754019218252, 0.24490425197222826, 0.17392118469433951,
-      0.11526383366829386, 0.067539653104788391, 0.029355508825677654,
-      -0.00063854253972001377, -0.023717164978371723, -0.04105740378953484,
-      -0.053724267973909487, -0.062662619145810422, -0.068693993358053609,
-      -0.072517231739155807, -0.074712110884907423, -0.075745472894150526,
-      -0.075979704634122389, -0.07568371471239535, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.022503073363602643,
-      -0.069759527427168191, -0.13743752056820313, -0.22009130903271562,
-      -0.31304095678211896, -0.41278587165955022, -0.51689108294413277,
-      -0.6190361047268822, -0.70866948932770879, -0.77790729523117685,
-      -0.82269928792843527, -0.84217256063074031, -0.83802561263657482,
-      -0.81356950866718913, -0.77288019480113579, -0.72018263941971439,
-      -0.65945681929564981, -0.59421708872315826, -0.52741354734161394,
-      -0.461412949244953, -0.39802801383801734, -0.33857315287981715,
-      -0.28393226911155495, -0.23462940410418259, -0.19089672225402188,
-      -0.15273657711644295, -0.11997620546159066, -0.092314489754606835,
-      -0.0693609552446525, -0.050667456737498576, -0.035753404687603692,
-      -0.024125496848972753, -0.01529295352440877, -0.0087795165830064741,
-      -0.0041334480369724464, -0.00093692695988742392, 0.0011839596869081073,
-      0.0025479045163461916, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.15904312808798332, 0.333990568984765, 0.47832220772460987,
-      0.58416540946716278, 0.65693261066516784, 0.70495896345585118,
-      0.73577587316320636, 0.72192200240611226, 0.63349452928888661,
-      0.48934636860079361, 0.316572697282696, 0.13762965416511874,
-      -0.029309044607082134, -0.17284640250194433, -0.28757653021199792,
-      -0.37244619501650156, -0.42918690403688137, -0.46108949911920638,
-      -0.472141916661951, -0.46646702018707037, -0.44798051527837685,
-      -0.42020425006135331, -0.38618089785248172, -0.34845381996375979,
-      -0.30908589279080623, -0.26970133158737392, -0.23153779491027104,
-      -0.1955024419657708, -0.16222681542883124, -0.13211850796765254,
-      -0.10540682386605965, -0.082181611635583948, -0.062425042864740363,
-      -0.046034484669102191, -0.032836638041966619, -0.02259179014725398,
-      -0.014989616803719691, -0.0096398411322841156, -0.0060697819517353995, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.63617251235193328,
-      0.69978976358712663, 0.57732655495937946, 0.42337280697021151,
-      0.29106880479202035, 0.19210541116273327, 0.12326763882942052,
-      -0.055415483028376344, -0.35370989246890266, -0.57659264275237188,
-      -0.69109468527239049, -0.715772172470309, -0.66775479508880353,
-      -0.57414943157944875, -0.45892051084021435, -0.33947865921801468,
-      -0.22696283608151938, -0.12761038032929992, -0.044209670170978481,
-      0.022699585899522517, 0.073946019634774166, 0.11110506086809409,
-      0.13609340883548637, 0.15090831155488771, 0.15747170869181443,
-      0.15753824481372919, 0.15265414670841154, 0.144141411778001,
-      0.13310250614775809, 0.12043322984471487, 0.10684673640637156,
-      0.092900848921902757, 0.079026275083374384, 0.065562232782552687,
-      0.052791386508542273, 0.040979391578850562, 0.030408693374137159,
-      0.0213991026857423, 0.014280236722194861, 0.00923514917365088, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.011435735696222466,
-      0.03290297114834001, 0.062937128935804956, 0.099996321790263534,
-      0.14243545123986764, 0.18847282934695117, 0.23615152721674704,
-      0.28329743838057569, 0.32747668536681629, 0.36595483187413169,
-      0.39566073671941876, 0.41315848749326822, 0.4146306238841263,
-      0.40358555899513288, 0.38313061138791132, 0.35596958037882576,
-      0.32441256434548044, 0.29039509811763492, 0.25550405048453056,
-      0.22100798538914296, 0.18788971265024126, 0.1568800554829092,
-      0.12849113431302361, 0.1030484121039778, 0.080720561601771879,
-      0.061547120929860692, 0.04546295538860088, 0.0323199076252273,
-      0.0219053347484918, 0.013957701038141706, 0.0081794242976205127,
-      0.0042471203986037195, 0.0018195718619451113, 0.00054368731712603024,
-      5.8850780330809E-5, -1.9840400286658146E-22, -4.2680193328365891E-23,
-      6.5364078153500794E-10, 2.4891904996851522E-9, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.045742942784889863, 0.08586894180847017,
-      0.1201366311498598, 0.14823677141783428, 0.16975651779841644,
-      0.18414951242833413, 0.19071479147918349, 0.1885836446553146,
-      0.17671698794496252, 0.15391258602926164, 0.1188236193811483,
-      0.069991003095397991, 0.0058885455634322195, -0.044180259555973905,
-      -0.081819790428886235, -0.10864412403634224, -0.12622806413338108,
-      -0.13606986491138218, -0.1395641905324172, -0.13798426038155043,
-      -0.13247309095560675, -0.12403862866932822, -0.1135556846795424,
-      -0.10177088883618327, -0.089311402008823676, -0.0766937626876447,
-      -0.064336662165039235, -0.052572191053494331, -0.041658291506942,
-      -0.031790534841400368, -0.023113106962084778, -0.015729215596067169,
-      -0.0097101941466344339, -0.0051035381792763242, -0.0019393461471808849,
-      -0.000235403121323236, 1.6046352456986988E-22, 2.614563126140435E-9,
-      7.34219887260006E-9, 5.4297206624692232E-9, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;
+    if (rt_WriteMat4FileHeader(fp,7,0,"data")) {
+      rtmSetErrorStatus(helikopter_M,
+                        "Error writing mat file header to file Data.mat");
+      return;
+    }
 
-    helikopter_DW.x_optimal_PWORK.TimePtr = (void *) pTimeValues0;
-    helikopter_DW.x_optimal_PWORK.DataPtr = (void *) pDataValues0;
-    helikopter_DW.x_optimal_IWORK.PrevIndex = 0;
+    helikopter_DW.ToFile_IWORK.Count = 0;
+    helikopter_DW.ToFile_IWORK.Decimation = -1;
+    helikopter_DW.ToFile_PWORK.FilePtr = fp;
   }
 
   /* Start for FromWorkspace: '<Root>/optimal input' */
@@ -1096,36 +970,36 @@ void helikopter_initialize(void)
       19.75, 20.0 } ;
 
     static real_T pDataValues0[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78539816339744828,
-      0.78539816339744828, 0.78539816339744828, 0.78539816339744828,
-      0.78539816339744828, 0.78539816339744828, 0.78539816339744828,
-      0.62132655986163088, 0.30593841122979276, 0.053747121535147477,
-      -0.14852450897920372, -0.3090026486128728, -0.41944900375652927,
-      -0.48875794098373104, -0.52499493063457514, -0.53529900513650386,
-      -0.52586661682893354, -0.50196977121544961, -0.46801237581224986,
-      -0.42760733502461334, -0.38365295240908442, -0.33842941660112386,
-      -0.29368063534173861, -0.25069934799797183, -0.21040203669652413,
-      -0.17340311139024406, -0.14007314930063514, -0.11059516231927541,
-      -0.085008949268347581, -0.063251850323870748, -0.045185564290683045,
-      -0.030617057003127109, -0.019312761901634851, -0.010996913766182418,
-      -0.0053445944322872791, -0.0019600983382425264, -0.000354225429309705,
-      7.2695467966494488E-5, -1.5594535707644942E-6, -1.4145873070860122E-6,
-      -1.4145873070860122E-6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+      0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.52359877559829882,
+      0.52359877559829882, 0.52359877559829882, 0.52359877559829882,
+      0.52359877559829882, 0.52359877559829882, 0.52359877559829882,
+      0.52359877559829882, 0.52359877559829882, 0.52359877559829882,
+      0.52359877559829882, 0.22966806008431381, -0.012081074502814175,
+      -0.19512759949696437, -0.326232533248753, -0.41396594850866508,
+      -0.46626354634692968, -0.49026896243705548, -0.49227550238433476,
+      -0.47770861624157313, -0.45116484681536895, -0.41646197843726168,
+      -0.37671533211973329, -0.33441601274161431, -0.29151587054938571,
+      -0.24950451189351031, -0.20948658121002364, -0.17225635935663269,
+      -0.13835331543673796, -0.10812256211252616, -0.081756187327748878,
+      -0.059332068064471513, -0.0408380496529649, -0.026179702602174091,
+      -0.015184256644712976, -0.0075729943084719645, -0.0029340404341634033,
+      -0.00067408833292906072, -2.8917680013454423E-7, -1.7019002532349467E-6,
+      -1.7019002532349467E-6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.18297177113955948, 0.20624693887921117, 0.22832329167101961,
-      0.24802689863928404, 0.26394462071609565, 0.27440368780704211,
-      0.2774648564461924, 0.27091741307627265, 0.25228989062671348,
-      0.21886709742747612, 0.16772266670180186, 0.095773428935815252,
-      -0.00015392636147713336, 0.00011562842879250169, 0.00045695681167319313,
-      0.00087853829899851258, 0.0013862187827344467, 0.0019842582868002659,
-      0.0026762859732731145, 0.0034646070310441627, 0.0043438626272494056,
-      0.0053085174650117379, 0.00634584278362093, 0.0074378017366175456,
-      0.0085567309344631338, 0.0096711769740725154, 0.010735396095303598,
-      0.011695713057351741, 0.012485967669502511, 0.013027953206485372,
-      0.013231534265152, 0.012993314683018526, 0.012197491486389741,
-      0.010715843325832988, 0.0084098283948826728, 0.0051323772163121189,
-      0.000733914500556212, 1.0458252504561011E-8, 2.1525106111978828E-8, 0.0,
+      0.056721011959585156, 0.066296685755752829, 0.076078734533552114,
+      0.085756617247872674, 0.094937685190227411, 0.10313237111193911,
+      0.10975280471943587, 0.11410394138163046, 0.11537825161369707,
+      0.1126585065039433, 0.10491580061963469, 0.091021771474257065,
+      0.0697597678801153, 0.039846109508065955, -3.47803001773024E-5,
+      9.2472665949756757E-5, 0.00025441950812684456, 0.00045210456924198552,
+      0.00068861821235043617, 0.00096502633354263515, 0.00128494944058539,
+      0.0016447536536840278, 0.0020466964766689259, 0.0024836667716690583,
+      0.0029498626023076496, 0.0034384484744345014, 0.0039345387343626779,
+      0.0044235483381617688, 0.0048825869427918467, 0.0052883295517736923,
+      0.0056090863933285764, 0.0058084977117739628, 0.0058445513309626166,
+      0.0056705429517424641, 0.00523367405789404, 0.0044746983408144947,
+      0.0033317144576182922, 0.0017393189160492164, 3.1749274270027468E-15, 0.0,
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
       0.0, 0.0, 0.0, 0.0, 0.0, 0.0 } ;
 
@@ -1243,6 +1117,36 @@ void helikopter_terminate(void)
     hil_monitor_delete_all(helikopter_DW.HILInitialize_Card);
     hil_close(helikopter_DW.HILInitialize_Card);
     helikopter_DW.HILInitialize_Card = NULL;
+  }
+
+  /* Terminate for ToFile: '<Root>/To File' */
+  {
+    FILE *fp = (FILE *) helikopter_DW.ToFile_PWORK.FilePtr;
+    if (fp != (NULL)) {
+      char fileName[509] = "Data.mat";
+      if (fclose(fp) == EOF) {
+        rtmSetErrorStatus(helikopter_M, "Error closing MAT-file Data.mat");
+        return;
+      }
+
+      if ((fp = fopen(fileName, "r+b")) == (NULL)) {
+        rtmSetErrorStatus(helikopter_M, "Error reopening MAT-file Data.mat");
+        return;
+      }
+
+      if (rt_WriteMat4FileHeader(fp, 7, helikopter_DW.ToFile_IWORK.Count, "data"))
+      {
+        rtmSetErrorStatus(helikopter_M,
+                          "Error writing header for data to MAT-file Data.mat");
+      }
+
+      if (fclose(fp) == EOF) {
+        rtmSetErrorStatus(helikopter_M, "Error closing MAT-file Data.mat");
+        return;
+      }
+
+      helikopter_DW.ToFile_PWORK.FilePtr = (NULL);
+    }
   }
 }
 
@@ -1379,10 +1283,10 @@ RT_MODEL_helikopter_T *helikopter(void)
   helikopter_M->Timing.stepSize1 = 0.002;
 
   /* External mode info */
-  helikopter_M->Sizes.checksums[0] = (131507472U);
-  helikopter_M->Sizes.checksums[1] = (4206507561U);
-  helikopter_M->Sizes.checksums[2] = (3374790628U);
-  helikopter_M->Sizes.checksums[3] = (2954847890U);
+  helikopter_M->Sizes.checksums[0] = (1292656528U);
+  helikopter_M->Sizes.checksums[1] = (3180661728U);
+  helikopter_M->Sizes.checksums[2] = (1338164628U);
+  helikopter_M->Sizes.checksums[3] = (2463975603U);
 
   {
     static const sysRanDType rtAlwaysEnabled = SUBSYS_RAN_BC_ENABLE;
@@ -1406,6 +1310,11 @@ RT_MODEL_helikopter_T *helikopter(void)
   helikopter_M->ModelData.blockIO = ((void *) &helikopter_B);
 
   {
+    int_T i;
+    for (i = 0; i < 6; i++) {
+      helikopter_B.Gain1[i] = 0.0;
+    }
+
     helikopter_B.ElevationCounttorad = 0.0;
     helikopter_B.Gain = 0.0;
     helikopter_B.Sum = 0.0;
@@ -1416,6 +1325,7 @@ RT_MODEL_helikopter_T *helikopter(void)
     helikopter_B.Gain_d = 0.0;
     helikopter_B.Gain_b = 0.0;
     helikopter_B.Gain_dg = 0.0;
+    helikopter_B.Sum5 = 0.0;
     helikopter_B.Sum1 = 0.0;
     helikopter_B.Sum2 = 0.0;
     helikopter_B.K_ei = 0.0;
@@ -1526,9 +1436,9 @@ RT_MODEL_helikopter_T *helikopter(void)
   helikopter_M->Sizes.numU = (0);      /* Number of model inputs */
   helikopter_M->Sizes.sysDirFeedThru = (0);/* The model is not direct feedthrough */
   helikopter_M->Sizes.numSampTimes = (2);/* Number of sample times */
-  helikopter_M->Sizes.numBlocks = (62);/* Number of blocks */
-  helikopter_M->Sizes.numBlockIO = (16);/* Number of block outputs */
-  helikopter_M->Sizes.numBlockPrms = (153);/* Sum of parameter "widths" */
+  helikopter_M->Sizes.numBlocks = (60);/* Number of blocks */
+  helikopter_M->Sizes.numBlockIO = (18);/* Number of block outputs */
+  helikopter_M->Sizes.numBlockPrms = (141);/* Sum of parameter "widths" */
   return helikopter_M;
 }
 

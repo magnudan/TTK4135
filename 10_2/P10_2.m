@@ -34,8 +34,8 @@ z  = zeros(N*mx+M*mu,1);                % Initialize z for the whole horizon
 z0 = z;                                 % Initial value for optimization
 
 % Bounds
-ul 	    = -pi/4;                        % Lower bound on control
-uu 	    = pi/4;                         % Upper bound on control
+ul 	    = -pi/6;                        % Lower bound on control
+uu 	    = pi/6;                         % Upper bound on control
 
 xl      = -Inf*ones(mx,1);              % Lower bound on states (no bound)
 xu      = Inf*ones(mx,1);               % Upper bound on states (no bound)
@@ -49,7 +49,7 @@ vub(N*mx+M*mu)  = 0;                    % We want the last input to be zero
 
 % Generate the matrix Q and the vector c (objecitve function weights in the QP problem) 
 Q1 = zeros(mx,mx);
-Q1(1,1) = 2;                            % Weight on state x1
+Q1(1,1) = 20;                            % Weight on state x1
 Q1(2,2) = 0;                            % Weight on state x2
 Q1(3,3) = 0;                            % Weight on state x3
 Q1(4,4) = 0;                            % Weight on state x4
@@ -100,21 +100,4 @@ x4  = [zero_padding; x4; zero_padding];
 %% Plotting
 t = 0:delta_t:delta_t*(length(u)-1);
 
-u_optimal = [t.' u];
-x_optimal = [t.' x1 x2 x3 x4];
-figure(2)
-subplot(511)
-stairs(t,u),grid
-ylabel('u')
-subplot(512)
-plot(t,x1,'m',t,x1,'mo'),grid
-ylabel('lambda')
-subplot(513)
-plot(t,x2,'m',t,x2','mo'),grid
-ylabel('r')
-subplot(514)
-plot(t,x3,'m',t,x3,'mo'),grid
-ylabel('p')
-subplot(515)
-plot(t,x4,'m',t,x4','mo'),grid
-xlabel('tid (s)'),ylabel('pdot')
+wololol = [t.' u];
