@@ -136,33 +136,3 @@ t = 0:delta_t:delta_t*(length(u1)-1);
 
 u_optimal = [t.' u1 u2];
 x_optimal = [t.' x1 x2 x3 x4 x5 x6];
-
-figure(1)
-subplot(211)
-stairs(t,u1),grid
-ylabel('u1')
-subplot(212)
-stairs(t,u2),grid
-ylabel('u2')
-xlabel('time (s)')
-
-figure(2)
-subplot(611)
-plot(t,x1,'b',t,x1,'bo'),grid
-ylabel('lambda')
-subplot(612)
-plot(t,x2,'b',t,x2','bo'),grid
-ylabel('r')
-subplot(613)
-plot(t,x3,'m',t,x3,'mo'),grid
-ylabel('p')
-subplot(614)
-plot(t,x4,'m',t,x4','mo'),grid
-ylabel('p\_dot')
-subplot(615)
-plot(t,x5,'k',t,x5','ko'),grid
-ylabel('e')
-subplot(616)
-plot(t,x6,'k',t,x6','ko'),grid
-ylabel('e\_dot')
-xlabel('tid (s)')

@@ -3,9 +3,9 @@
  *
  * Code generation for model "helikopter".
  *
- * Model version              : 1.196
+ * Model version              : 1.198
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Mar 01 16:32:35 2018
+ * C source code generated on : Thu Mar 01 17:33:40 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -18,6 +18,13 @@
 
 /* Block parameters (auto storage) */
 P_helikopter_T helikopter_P = {
+  /*  Variable: K_LQR
+   * Referenced by: '<Root>/Gain'
+   */
+  { -0.662480224594051, 2.57212679500879E-16, -2.4397027567599339,
+    7.3394853899487543E-16, 1.1824153080356954, -3.1730324224292878E-16,
+    0.42471767417603917, -5.356898011122853E-17, -1.94389195132647E-15,
+    5.5966077546303588, -4.6869442224775208E-16, 3.3716641879737708 },
   11.219843696907915,                  /* Variable: K_ed
                                         * Referenced by: '<S3>/K_ed'
                                         */
