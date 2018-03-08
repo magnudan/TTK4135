@@ -5,7 +5,7 @@
  *
  * Model version              : 1.198
  * Simulink Coder version : 8.6 (R2014a) 27-Dec-2013
- * C source code generated on : Thu Mar 01 17:33:40 2018
+ * C source code generated on : Thu Mar 08 13:18:19 2018
  *
  * Target selection: quarc_win64.tlc
  * Note: GRT includes extra infrastructure and instrumentation for prototyping
@@ -845,12 +845,6 @@ typedef struct {
     void *TimePtr;
     void *DataPtr;
     void *RSimInfoPtr;
-  } x_optimal_PWORK;                   /* '<Root>/x_optimal' */
-
-  struct {
-    void *TimePtr;
-    void *DataPtr;
-    void *RSimInfoPtr;
   } optimalinput_PWORK;                /* '<Root>/optimal input' */
 
   struct {
@@ -913,10 +907,6 @@ typedef struct {
 
   struct {
     int_T PrevIndex;
-  } x_optimal_IWORK;                   /* '<Root>/x_optimal' */
-
-  struct {
-    int_T PrevIndex;
   } optimalinput_IWORK;                /* '<Root>/optimal input' */
 } DW_helikopter_T;
 
@@ -970,9 +960,6 @@ typedef struct {
 
 /* Parameters (auto storage) */
 struct P_helikopter_T_ {
-  real_T K_LQR[12];                    /* Variable: K_LQR
-                                        * Referenced by: '<Root>/Gain'
-                                        */
   real_T K_ed;                         /* Variable: K_ed
                                         * Referenced by: '<S3>/K_ed'
                                         */

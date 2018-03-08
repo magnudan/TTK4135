@@ -11,14 +11,14 @@ A_c =   [0 1 0 0 0 0;
          0 0 0 1 0 0; 
          0 0 -K_1*K_pp -K_1*K_pd 0 0;
          0 0 0 0 0 1;
-         0 0 0 0 -K_3*K_pd -K_3*K_ed];
+         0 0 0 0 -K_3*K_ep -K_3*K_ed];
 
 B_c = [0 0; 
        0 0;
        0 0;
        K_1*K_pp 0;
        0 0;
-       0 K_3*K_ed];
+       0 K_3*K_ep];
 
 
 
@@ -47,7 +47,8 @@ x0 = [x1_0 x2_0 x3_0 x4_0 x5_0 x6_0]';            % Initial values
 N  = 40;                                % Time horizon for states
 M  = N;                                 % Time horizon for inputs
 z  = zeros(N*mx+M*mu,1);                % Initialize z for the whole horizon
-z0 = z;                                 % Initial value for optimization
+z0 = z;
+z0(1:mx)=x0;                            % Initial value for optimization
 
 % Bounds
 ul 	    = [-pi/6 ; -Inf];               % Lower bound on control
@@ -69,7 +70,7 @@ vub(N*mx+M*mu)  = 0;                    % We want the last input to be zero
 % Generate the matrix Q and the vector c (objecitve function weights in the QP problem) 
 Q1 = zeros(mx,mx);
 Q1(1,1) = 1;                            % Weight on state x1
-Q1(2,2) = 1;                            % Weight on state x2
+Q1(2,2) = 0;                            % Weight on state x2
 Q1(3,3) = 0;                            % Weight on state x3
 Q1(4,4) = 0;                            % Weight on state x4
 Q1(5,5) = 0;                            % Weight on state x5
